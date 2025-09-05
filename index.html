@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yulduzlarni Yig'ish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle at center, #0f0f23 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .game-container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #ffff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00; }
+            to { text-shadow: 0 0 30px #ffff00, 0 0 40px #ffff00; }
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
+        }
+
+        .game-board {
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(180deg, #001122 0%, #000511 100%);
+            border: 3px solid #333;
+            border-radius: 15px;
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 100, 200, 0.3);
+        }
+
+        .player {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ff6b6b, #ff4757);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20px;
+            left: 275px;
+            transition: left 0.1s ease;
+            box-shadow: 0 0 20px #ff4757;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .star {
+            width: 30px;
+            height: 30px;
+            background: #ffff00;
+            position: absolute;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: sparkle 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes sparkle {
+            from { box-shadow: 0 0 10px #ffff00; }
+            to { box-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00; }
+        }
+
+        .asteroid {
+            width: 40px;
+            height: 40px;
+            background: #8B4513;
+            position: absolute;
+            border-radius: 50% 30% 50% 30%;
+            box-shadow: inset -5px -5px 0 #654321;
+        }
+
+        .powerup {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse 1s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .game-over {
+            color: #ff4757;
+            animation: flash 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+
+        .instructions {
+            margin-top: 15px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 255, 136, 0.8);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .background-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .bg-star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>⭐ Yulduzlarni Yig'ish</h1>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div>Ball</div>
+                <div id="score">0</div>
+            </div>
+            <div class="info-item">
+                <div>Daraja</div>
+                <div id="level">1</div>
+            </div>
+            <div class="info-item">
+                <div>Hayot</div>
+                <div id="lives">❤️❤️❤️</div>
+            </div>
+            <div class="info-item">
+                <div>Eng Yuqori</div>
+                <div id="highScore">0</div>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <div class="background-stars" id="backgroundStars"></div>
+            <div class="level-indicator" id="levelIndicator">Daraja 1</div>
+            <div class="player" id="player">🚀</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="startGame()" id="startBtn">O'yinni Boshlash</button>
+            <button class="btn" onclick="pauseGame()" id="pauseBtn">Pauza</button>
+        </div>
+
+        <div class="message" id="message">O'yinni boshlash uchun tugmani bosing!</div>
+        
+        <div class="instructions">
+            🎮 Strelkalar yoki A/D tugmalari bilan harakat qiling<br>
+            ⭐ Yulduzlarni yig'ing (+10 ball)<br>
+            💎 Bonuslarni oling (turli effektlar)<br>
+            ☄️ Asteroidlardan qoching!
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            isRunning: false,
+            isPaused: false,
+            score: 0,
+            level: 1,
+            lives: 3,
+            playerX: 275,
+            objects: [],
+            gameSpeed: 2,
+            spawnRate: 0.02,
+            highScore: localStorage.getItem('starGameHighScore') || 0
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const player = document.getElementById('player');
+        const boardWidth = 600;
+        const boardHeight = 400;
+        const playerWidth = 50;
+
+        let gameLoop;
+        let keys = {};
+
+        // Fon yulduzlarini yaratish
+        function createBackgroundStars() {
+            const container = document.getElementById('backgroundStars');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'bg-star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 3 + 1) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // Klaviatura hodisalari
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (!gameState.isRunning) startGame();
+                else pauseGame();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // O'yinchini harakatlantirish
+        function movePlayer() {
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                gameState.playerX = Math.max(0, gameState.playerX - 5);
+            }
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                gameState.playerX = Math.min(boardWidth - playerWidth, gameState.playerX + 5);
+            }
+            player.style.left = gameState.playerX + 'px';
+        }
+
+        // Ob'ektlarni yaratish
+        function createObject() {
+            if (Math.random() < gameState.spawnRate) {
+                const rand = Math.random();
+                let type, emoji, className;
+                
+                if (rand < 0.6) {
+                    type = 'star';
+                    emoji = '';
+                    className = 'star';
+                } else if (rand < 0.8) {
+                    type = 'asteroid';
+                    emoji = '';
+                    className = 'asteroid';
+                } else {
+                    type = 'powerup';
+                    emoji = '💎';
+                    className = 'powerup';
+                }
+
+                const object = {
+                    x: Math.random() * (boardWidth - 40),
+                    y: -40,
+                    type: type,
+                    element: null
+                };
+
+                const element = document.createElement('div');
+                element.className = className;
+                element.style.left = object.x + 'px';
+                element.style.top = object.y + 'px';
+                element.textContent = emoji;
+                
+                gameBoard.appendChild(element);
+                object.element = element;
+                gameState.objects.push(object);
+            }
+        }
+
+        // Ob'ektlarni yangilash
+        function updateObjects() {
+            gameState.objects.forEach((obj, index) => {
+                obj.y += gameState.gameSpeed;
+                obj.element.style.top = obj.y + 'px';
+
+                // Collision detection
+                const playerRect = {
+                    x: gameState.playerX,
+                    y: 350,
+                    width: 50,
+                    height: 50
+                };
+
+                const objRect = {
+                    x: obj.x,
+                    y: obj.y,
+                    width: obj.type === 'asteroid' ? 40 : (obj.type === 'powerup' ? 35 : 30),
+                    height: obj.type === 'asteroid' ? 40 : (obj.type === 'powerup' ? 35 : 30)
+                };
+
+                if (collision(playerRect, objRect)) {
+                    handleCollision(obj.type);
+                    obj.element.remove();
+                    gameState.objects.splice(index, 1);
+                } else if (obj.y > boardHeight) {
+                    obj.element.remove();
+                    gameState.objects.splice(index, 1);
+                }
+            });
+        }
+
+        // Collision detection
+        function collision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // Collision handling
+        function handleCollision(type) {
+            switch (type) {
+                case 'star':
+                    gameState.score += 10;
+                    showMessage('⭐ +10 ball!', '#ffff00');
+                    break;
+                case 'powerup':
+                    const powerups = ['score', 'life', 'slow'];
+                    const power = powerups[Math.floor(Math.random() * powerups.length)];
+                    
+                    if (power === 'score') {
+                        gameState.score += 50;
+                        showMessage('💎 +50 ball!', '#00ff88');
+                    } else if (power === 'life') {
+                        if (gameState.lives < 5) {
+                            gameState.lives++;
+                            showMessage('❤️ Qo\'shimcha hayot!', '#ff69b4');
+                        }
+                    } else if (power === 'slow') {
+                        gameState.gameSpeed *= 0.7;
+                        setTimeout(() => gameState.gameSpeed /= 0.7, 3000);
+                        showMessage('🐌 Sekinlashtirish!', '#87ceeb');
+                    }
+                    break;
+                case 'asteroid':
+                    gameState.lives--;
+                    showMessage('☄️ Hayot yo\'qotildi!', '#ff4757');
+                    
+                    if (gameState.lives <= 0) {
+                        endGame();
+                    }
+                    break;
+            }
+        }
+
+        // Xabarni ko'rsatish
+        function showMessage(text, color) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.style.color = color;
+            setTimeout(() => {
+                if (gameState.isRunning) {
+                    msg.textContent = 'Yaxshi ketmoqda!';
+                    msg.style.color = 'white';
+                }
+            }, 1500);
+        }
+
+        // UI yangilash
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('highScore').textContent = gameState.highScore;
+            document.getElementById('levelIndicator').textContent = `Daraja ${gameState.level}`;
+            
+            const heartsCount = gameState.lives;
+            document.getElementById('lives').textContent = '❤️'.repeat(Math.max(0, heartsCount));
+
+            // Daraja o'sishi
+            const newLevel = Math.floor(gameState.score / 100) + 1;
+            if (newLevel > gameState.level) {
+                gameState.level = newLevel;
+                gameState.gameSpeed += 0.5;
+                gameState.spawnRate += 0.005;
+                showMessage(`🎉 ${gameState.level}-daraja!`, '#00ff88');
+            }
+        }
+
+        // O'yinni boshlash
+        function startGame() {
+            if (gameState.isPaused) {
+                gameState.isPaused = false;
+                gameLoop = setInterval(gameUpdate, 20);
+                document.getElementById('pauseBtn').textContent = 'Pauza';
+                document.getElementById('message').textContent = 'O\'yin davom etmoqda!';
+                return;
+            }
+
+            gameState.isRunning = true;
+            gameState.isPaused = false;
+            gameState.score = 0;
+            gameState.level = 1;
+            gameState.lives = 3;
+            gameState.playerX = 275;
+            gameState.gameSpeed = 2;
+            gameState.spawnRate = 0.02;
+            gameState.objects = [];
+
+            // Eski ob'ektlarni tozalash
+            gameState.objects.forEach(obj => obj.element.remove());
+            gameState.objects = [];
+
+            player.style.left = gameState.playerX + 'px';
+            
+            document.getElementById('startBtn').textContent = 'Qayta Boshlash';
+            document.getElementById('message').textContent = 'Yaxshi omad!';
+            document.getElementById('message').style.color = 'white';
+
+            gameLoop = setInterval(gameUpdate, 20);
+        }
+
+        // Pauzaga qo'yish
+        function pauseGame() {
+            if (!gameState.isRunning) return;
+
+            if (gameState.isPaused) {
+                gameState.isPaused = false;
+                gameLoop = setInterval(gameUpdate, 20);
+                document.getElementById('pauseBtn').textContent = 'Pauza';
+                document.getElementById('message').textContent = 'O\'yin davom etmoqda!';
+            } else {
+                gameState.isPaused = true;
+                clearInterval(gameLoop);
+                document.getElementById('pauseBtn').textContent = 'Davom';
+                document.getElementById('message').textContent = 'O\'yin pauza qilingan';
+            }
+        }
+
+        // O'yinni tugatish
+        function endGame() {
+            gameState.isRunning = false;
+            clearInterval(gameLoop);
+            
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('starGameHighScore', gameState.highScore);
+                document.getElementById('message').textContent = `🏆 Yangi rekord: ${gameState.score} ball!`;
+            } else {
+                document.getElementById('message').textContent = `💀 O'yin tugadi! Ball: ${gameState.score}`;
+            }
+            
+            document.getElementById('message').classList.add('game-over');
+            document.getElementById('startBtn').textContent = 'Qayta O\'ynash';
+            document.getElementById('pauseBtn').textContent = 'Pauza';
+
+            setTimeout(() => {
+                document.getElementById('message').classList.remove('game-over');
+            }, 3000);
+        }
+
+        // O'yin sikli
+        function gameUpdate() {
+            movePlayer();
+            createObject();
+            updateObjects();
+            updateUI();
+        }
+
+        // Boshlang'ich sozlash
+        createBackgroundStars();
+        document.getElementById('highScore').textContent = gameState.highScore;
+    </script>
+</body>
+</html>
