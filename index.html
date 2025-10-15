@@ -3,543 +3,477 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yulduzlarni Yig'ish</title>
+    <title>Apple Markaz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: radial-gradient(circle at center, #0f0f23 0%, #000000 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .game-container {
-            text-align: center;
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            text-shadow: 0 0 20px #ffff00;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00; }
-            to { text-shadow: 0 0 30px #ffff00, 0 0 40px #ffff00; }
-        }
-
-        .game-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 0 20px;
-        }
-
-        .info-item {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-width: 120px;
-        }
-
-        .game-board {
-            width: 600px;
-            height: 400px;
-            background: linear-gradient(180deg, #001122 0%, #000511 100%);
-            border: 3px solid #333;
-            border-radius: 15px;
-            position: relative;
-            margin: 0 auto;
-            overflow: hidden;
-            box-shadow: inset 0 0 50px rgba(0, 100, 200, 0.3);
-        }
-
-        .player {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #ff6b6b, #ff4757);
-            border-radius: 50%;
-            position: absolute;
-            bottom: 20px;
-            left: 275px;
-            transition: left 0.1s ease;
-            box-shadow: 0 0 20px #ff4757;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-        }
-
-        .star {
-            width: 30px;
-            height: 30px;
-            background: #ffff00;
-            position: absolute;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: sparkle 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes sparkle {
-            from { box-shadow: 0 0 10px #ffff00; }
-            to { box-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00; }
-        }
-
-        .asteroid {
-            width: 40px;
-            height: 40px;
-            background: #8B4513;
-            position: absolute;
-            border-radius: 50% 30% 50% 30%;
-            box-shadow: inset -5px -5px 0 #654321;
-        }
-
-        .powerup {
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(45deg, #00ff88, #00cc66);
-            position: absolute;
-            border-radius: 50%;
-            animation: pulse 1s ease-in-out infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            box-shadow: 0 0 15px #00ff88;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .controls {
-            margin-top: 20px;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-
-        .message {
-            margin-top: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            min-height: 30px;
-        }
-
-        .game-over {
-            color: #ff4757;
-            animation: flash 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes flash {
-            from { opacity: 1; }
-            to { opacity: 0.5; }
-        }
-
-        .instructions {
-            margin-top: 15px;
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-
-        .level-indicator {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 255, 136, 0.8);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        .background-stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .bg-star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+        .hidden { display: none; }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 50;
         }
     </style>
 </head>
-<body>
-    <div class="game-container">
-        <h1>⭐ Yulduzlarni Yig'ish</h1>
+<body class="bg-gray-50 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg sticky top-0 z-40">
+        <div class="px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">🛒 Apple Markaz</h1>
+                <button onclick="toggleMenu()" class="p-2 hover:bg-purple-800 rounded-lg">
+                    <span id="menuIcon">☰</span>
+                </button>
+            </div>
+        </div>
         
-        <div class="game-info">
-            <div class="info-item">
-                <div>Ball</div>
-                <div id="score">0</div>
-            </div>
-            <div class="info-item">
-                <div>Daraja</div>
-                <div id="level">1</div>
-            </div>
-            <div class="info-item">
-                <div>Hayot</div>
-                <div id="lives">❤️❤️❤️</div>
-            </div>
-            <div class="info-item">
-                <div>Eng Yuqori</div>
-                <div id="highScore">0</div>
-            </div>
+        <div id="menu" class="hidden bg-purple-800 border-t border-purple-600">
+            <nav class="flex flex-col">
+                <button onclick="showPage('home')" class="px-4 py-3 text-left hover:bg-purple-900 border-b border-purple-700">🏠 Bosh sahifa</button>
+                <button onclick="showPage('about')" class="px-4 py-3 text-left hover:bg-purple-900 border-b border-purple-700">ℹ️ Biz haqimizda</button>
+                <button onclick="showPage('login')" id="loginBtn" class="px-4 py-3 text-left hover:bg-purple-900">🔐 Admin paneliga o'tish</button>
+                <button onclick="showPage('admin')" id="adminBtn" class="hidden px-4 py-3 text-left hover:bg-purple-900 border-b border-purple-700">⚙️ Admin Panel</button>
+                <button onclick="logout()" id="logoutBtn" class="hidden px-4 py-3 text-left hover:bg-purple-900">🚪 Chiqish</button>
+            </nav>
         </div>
+    </header>
 
-        <div class="game-board" id="gameBoard">
-            <div class="background-stars" id="backgroundStars"></div>
-            <div class="level-indicator" id="levelIndicator">Daraja 1</div>
-            <div class="player" id="player">🚀</div>
-        </div>
-
-        <div class="controls">
-            <button class="btn" onclick="startGame()" id="startBtn">O'yinni Boshlash</button>
-            <button class="btn" onclick="pauseGame()" id="pauseBtn">Pauza</button>
-        </div>
-
-        <div class="message" id="message">O'yinni boshlash uchun tugmani bosing!</div>
+    <main class="px-4 py-6 max-w-md mx-auto">
         
-        <div class="instructions">
-            🎮 Strelkalar yoki A/D tugmalari bilan harakat qiling<br>
-            ⭐ Yulduzlarni yig'ing (+10 ball)<br>
-            💎 Bonuslarni oling (turli effektlar)<br>
-            ☄️ Asteroidlardan qoching!
+        <!-- Bosh sahifa -->
+        <div id="homePage">
+            <h2 class="text-2xl font-bold mb-1 text-gray-800">Telefonlar</h2>
+            <!-- <p class="text-gray-500 text-sm mb-5">Eng yangi va sifatli mahsulotlar</p> -->
+            <div id="phonesList" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Batafsil sahifa -->
+        <div id="detailPage" class="hidden"></div>
+
+        <!-- Biz haqimizda -->
+        <div id="aboutPage" class="hidden bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-6">Biz haqimizda</h2>
+            <div class="space-y-4">
+                <a href="https://t.me/applemarkazzz" target="_blank" class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 border border-blue-100">
+                    <span class="text-2xl">📱</span>
+                    <span class="text-blue-700 font-semibold">t.me/applemarkazzz</span>
+                </a>
+                <a href="https://instagram.com/apple.markaz" target="_blank" class="flex items-center gap-3 p-4 bg-pink-50 rounded-xl hover:bg-pink-100 border border-pink-100">
+                    <span class="text-2xl">📷</span>
+                    <span class="text-pink-700 font-semibold">@apple.markaz</span>
+                </a>
+                <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                    <p class="text-gray-800 font-semibold mb-3 text-sm">📞 Telefon raqamlar:</p>
+                    <a href="tel:+998948178883" class="block text-green-700 font-semibold text-base mb-2">+998 94 817 88 83</a>
+                    <a href="tel:+998995738883" class="block text-green-700 font-semibold text-base mb-2">+998 99 573 88 83</a>
+                    <p class="text-gray-600 text-xs mt-3">Buyurtma uchun qo'ng'iroq qiling!</p>
+                </div>
+                <a href="https://maps.app.goo.gl/SXTkrUQHAVc1XxqRA" target="_blank" class="flex items-center gap-3 p-4 bg-orange-50 rounded-xl hover:bg-orange-100 border border-orange-100">
+                    <span class="text-2xl">📍</span>
+                    <div>
+                        <p class="text-orange-700 font-semibold text-sm">Bizning manzil</p>
+                        <p class="text-gray-600 text-xs">Xaritada ko'rish</p>
+                    </div>
+                </a>
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🚚</span>
+                        <div>
+                            <p class="text-blue-900 font-semibold text-sm mb-1">Yetkazib berish</p>
+                            <p class="text-gray-700 text-xs">Butun O'zbekiston bo'ylab bepul yetkazib beramiz!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login sahifa -->
+        <div id="loginPage" class="hidden bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-6">Admin Kirish</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2 font-medium text-sm">Foydalanuvchi nomi</label>
+                <input type="text" id="username" class="w-full border border-gray-300 rounded-xl px-4 py-3" placeholder="Admin loginini kiriting">
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 mb-2 font-medium text-sm">Parol</label>
+                <input type="password" id="password" class="w-full border border-gray-300 rounded-xl px-4 py-3" placeholder="Parolni kiriting">
+            </div>
+            <button onclick="login()" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 mb-4 font-semibold">
+                Kirish
+            </button>
+            <!-- <div class="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <!-- <p class="font-semibold mb-2">Demo:</p>
+                <p>Login: admin21</p>
+                <p>Parol: admin21</p> -->
+            <!-- </div> --> 
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPage" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Admin Panel</h2>
+                <button onclick="showAddForm()" id="addBtn" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-3 rounded-xl hover:from-purple-700 hover:to-purple-800 shadow-lg">
+                    ➕
+                </button>
+            </div>
+            <div id="adminForm" class="hidden bg-white rounded-2xl shadow-lg p-5 mb-6">
+                <h3 class="text-xl font-bold mb-4">Yangi Telefon</h3>
+                <input type="text" id="phoneName" placeholder="Nomi" class="w-full border rounded-xl px-4 py-3 mb-3">
+                <input type="text" id="phoneDesc" placeholder="Qisqacha tavsif" class="w-full border rounded-xl px-4 py-3 mb-3">
+                <textarea id="phoneFullDesc" placeholder="To'liq tavsif" class="w-full border rounded-xl px-4 py-3 mb-3 h-24"></textarea>
+                <input type="text" id="phonePrice" placeholder="Narx (so'm)" class="w-full border rounded-xl px-4 py-3 mb-3">
+                
+                <label class="flex items-center justify-center w-full px-4 py-8 bg-purple-50 border-2 border-purple-300 border-dashed rounded-xl cursor-pointer hover:bg-purple-100 mb-3">
+                    <div class="text-center">
+                        <span class="text-4xl">📷</span>
+                        <p class="text-purple-700 font-semibold text-lg mt-2">Rasmlar tanlash</p>
+                        <p class="text-gray-500 text-sm mt-1">Ko'p rasmlarni birdan yuklang</p>
+                    </div>
+                    <input type="file" id="phoneImages" accept="image/*" multiple class="hidden" onchange="previewImages(event)">
+                </label>
+                
+                <div id="imagePreview" class="grid grid-cols-3 gap-2 mb-3 hidden"></div>
+                
+                <button onclick="savePhone()" class="w-full bg-green-500 text-white px-4 py-3 rounded-xl hover:bg-green-600 font-semibold mb-2">
+                    Saqlash
+                </button>
+                <button onclick="cancelForm()" class="w-full bg-gray-200 text-gray-800 px-4 py-3 rounded-xl hover:bg-gray-300 font-semibold">
+                    Bekor qilish
+                </button>
+            </div>
+            <div id="adminPhonesList" class="grid grid-cols-2 gap-3"></div>
+        </div>
+    </main>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="hidden modal-overlay items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-xl font-bold mb-4">Telefonni o'chirish</h3>
+            <p class="text-gray-700 mb-6">Haqiqatan ham bu telefonni o'chirmoqchimisiz?</p>
+            <button onclick="confirmDelete()" class="w-full bg-red-500 text-white px-4 py-3 rounded-xl hover:bg-red-600 font-semibold mb-2">
+                Ha, o'chirish
+            </button>
+            <button onclick="closeDeleteModal()" class="w-full bg-gray-200 text-gray-800 px-4 py-3 rounded-xl hover:bg-gray-300 font-semibold">
+                Bekor qilish
+            </button>
         </div>
     </div>
 
     <script>
-        let gameState = {
-            isRunning: false,
-            isPaused: false,
-            score: 0,
-            level: 1,
-            lives: 3,
-            playerX: 275,
-            objects: [],
-            gameSpeed: 2,
-            spawnRate: 0.02,
-            highScore: localStorage.getItem('starGameHighScore') || 0
-        };
+        // Ma'lumotlar
+        let phones = JSON.parse(localStorage.getItem('phones')) || [
+            {
+                id: '1',
+                name: 'iPhone 15 Pro Max',
+                description: 'A17 Pro chip, Titanium dizayn',
+                fullDescription: 'iPhone 15 Pro Max - Apple kompaniyasining eng kuchli smartfoni.',
+                imageUrls: ['https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500'],
+                price: '14,999,000',
+                comments: []
+            }
+        ];
+        
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let currentPage = 'home';
+        let selectedPhone = null;
+        let deletePhoneId = null;
+        let tempImages = [];
 
-        const gameBoard = document.getElementById('gameBoard');
-        const player = document.getElementById('player');
-        const boardWidth = 600;
-        const boardHeight = 400;
-        const playerWidth = 50;
+        // Initialization
+        if (isLoggedIn) {
+            document.getElementById('loginBtn').classList.add('hidden');
+            document.getElementById('adminBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+        }
 
-        let gameLoop;
-        let keys = {};
+        function saveToStorage() {
+            localStorage.setItem('phones', JSON.stringify(phones));
+        }
 
-        // Fon yulduzlarini yaratish
-        function createBackgroundStars() {
-            const container = document.getElementById('backgroundStars');
-            for (let i = 0; i < 50; i++) {
-                const star = document.createElement('div');
-                star.className = 'bg-star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = star.style.height = (Math.random() * 3 + 1) + 'px';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                container.appendChild(star);
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const icon = document.getElementById('menuIcon');
+            menu.classList.toggle('hidden');
+            icon.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+        }
+
+        function showPage(page) {
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('detailPage').classList.add('hidden');
+            document.getElementById('aboutPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            
+            if (page === 'admin' && !isLoggedIn) {
+                page = 'login';
+            }
+            
+            document.getElementById(page + 'Page').classList.remove('hidden');
+            currentPage = page;
+            
+            if (page === 'home') renderPhones();
+            if (page === 'admin') renderAdminPhones();
+            
+            toggleMenu();
+        }
+
+        function renderPhones() {
+            const container = document.getElementById('phonesList');
+            container.innerHTML = phones.map(phone => `
+                <div onclick="showDetail('${phone.id}')" class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md cursor-pointer">
+                    <div class="relative w-full aspect-square overflow-hidden bg-gray-100">
+                        <img src="${phone.imageUrls[0]}" alt="${phone.name}" class="w-full h-full object-cover">
+                        ${phone.imageUrls.length > 1 ? `
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                                +${phone.imageUrls.length}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-sm mb-1 line-clamp-2">${phone.name}</h3>
+                        <p class="text-purple-600 font-bold text-base">${phone.price} so'm</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showDetail(id) {
+            selectedPhone = phones.find(p => p.id === id);
+            const page = document.getElementById('detailPage');
+            
+            page.innerHTML = `
+                <button onclick="showPage('home')" class="mb-4 text-purple-600 hover:text-purple-800 font-semibold flex items-center gap-1">
+                    ← Orqaga
+                </button>
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="relative w-full aspect-square overflow-hidden bg-gray-100">
+                        <img id="mainImage" src="${selectedPhone.imageUrls[0]}" class="w-full h-full object-cover">
+                        ${selectedPhone.imageUrls.length > 1 ? `
+                            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                                ${selectedPhone.imageUrls.map((url, i) => `
+                                    <button onclick="changeImage(${i})" class="w-2 h-2 rounded-full bg-white ${i === 0 ? 'w-6' : 'bg-opacity-50'}"></button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-5">
+                        <h2 class="text-2xl font-bold mb-2">${selectedPhone.name}</h2>
+                        <p class="text-purple-600 font-bold text-3xl mb-4">${selectedPhone.price} so'm</p>
+                        <p class="text-gray-600 mb-3 text-sm">${selectedPhone.description}</p>
+                        <p class="text-gray-700 mb-5 text-sm">${selectedPhone.fullDescription}</p>
+                        
+                        <div class="space-y-3 mb-6">
+                            <a href="https://t.me/applemarkazzz" target="_blank" class="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-xl font-semibold">
+                                💬 Sotuvchi bilan gaplashish
+                            </a>
+                            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                                <p class="text-center font-semibold mb-3 text-sm">Yoki qo'ng'iroq qiling:</p>
+                                <a href="tel:+998948178883" class="flex items-center justify-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-semibold mb-2">
+                                    📞 +998 94 817 88 83
+                                </a>
+                                <a href="tel:+998995738883" class="flex items-center justify-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-semibold">
+                                    📞 +998 99 573 88 83
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-5">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                💬 Fikrlar (${selectedPhone.comments.length})
+                            </h3>
+                            <div id="commentsList" class="space-y-3 mb-4">
+                                ${selectedPhone.comments.length > 0 ? selectedPhone.comments.map(c => `
+                                    <div class="bg-gray-50 rounded-xl p-4 border">
+                                        <div class="flex justify-between mb-1">
+                                            <p class="font-semibold">👤 ${c.author}</p>
+                                            <p class="text-xs text-gray-500">${c.date}</p>
+                                        </div>
+                                        <p class="text-sm text-gray-700">${c.text}</p>
+                                    </div>
+                                `).join('') : '<p class="text-center text-gray-500 py-4">Hozircha fikr yo\'q</p>'}
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                                <h4 class="font-semibold mb-3 text-sm">Fikr qoldiring</h4>
+                                <input type="text" id="commentAuthor" placeholder="Ismingiz" class="w-full border rounded-lg px-4 py-2 mb-2 text-sm">
+                                <textarea id="commentText" placeholder="Fikringiz..." class="w-full border rounded-lg px-4 py-2 mb-3 text-sm h-20"></textarea>
+                                <button onclick="addComment()" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold text-sm">
+                                    Fikr qoldirish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showPage('detail');
+        }
+
+        function changeImage(index) {
+            document.getElementById('mainImage').src = selectedPhone.imageUrls[index];
+        }
+
+        function addComment() {
+            const author = document.getElementById('commentAuthor').value;
+            const text = document.getElementById('commentText').value;
+            
+            if (!author || !text) {
+                alert('Ism va fikringizni kiriting!');
+                return;
+            }
+            
+            const comment = {
+                id: Date.now().toString(),
+                author,
+                text,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            selectedPhone.comments.push(comment);
+            phones = phones.map(p => p.id === selectedPhone.id ? selectedPhone : p);
+            saveToStorage();
+            showDetail(selectedPhone.id);
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin2' && password === 'admin2') {
+                isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('adminBtn').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                showPage('admin');
+            } else {
+                alert('Noto\'g\'ri login yoki parol!');
             }
         }
 
-        // Klaviatura hodisalari
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-            if (e.key === ' ') {
-                e.preventDefault();
-                if (!gameState.isRunning) startGame();
-                else pauseGame();
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-
-        // O'yinchini harakatlantirish
-        function movePlayer() {
-            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
-                gameState.playerX = Math.max(0, gameState.playerX - 5);
-            }
-            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
-                gameState.playerX = Math.min(boardWidth - playerWidth, gameState.playerX + 5);
-            }
-            player.style.left = gameState.playerX + 'px';
+        function logout() {
+            isLoggedIn = false;
+            localStorage.setItem('isLoggedIn', 'false');
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('adminBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            showPage('home');
         }
 
-        // Ob'ektlarni yaratish
-        function createObject() {
-            if (Math.random() < gameState.spawnRate) {
-                const rand = Math.random();
-                let type, emoji, className;
-                
-                if (rand < 0.6) {
-                    type = 'star';
-                    emoji = '';
-                    className = 'star';
-                } else if (rand < 0.8) {
-                    type = 'asteroid';
-                    emoji = '';
-                    className = 'asteroid';
-                } else {
-                    type = 'powerup';
-                    emoji = '💎';
-                    className = 'powerup';
-                }
-
-                const object = {
-                    x: Math.random() * (boardWidth - 40),
-                    y: -40,
-                    type: type,
-                    element: null
-                };
-
-                const element = document.createElement('div');
-                element.className = className;
-                element.style.left = object.x + 'px';
-                element.style.top = object.y + 'px';
-                element.textContent = emoji;
-                
-                gameBoard.appendChild(element);
-                object.element = element;
-                gameState.objects.push(object);
-            }
+        function renderAdminPhones() {
+            const container = document.getElementById('adminPhonesList');
+            container.innerHTML = phones.map(phone => `
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="relative w-full aspect-square overflow-hidden bg-gray-100">
+                        <img src="${phone.imageUrls[0]}" class="w-full h-full object-cover">
+                        ${phone.imageUrls.length > 1 ? `
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-lg text-xs">
+                                +${phone.imageUrls.length}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-sm mb-1 line-clamp-2">${phone.name}</h3>
+                        <p class="text-purple-600 font-bold mb-3">${phone.price} so'm</p>
+                        <button onclick="deletePhone('${phone.id}')" class="w-full bg-red-500 text-white px-3 py-2 rounded-xl hover:bg-red-600 font-medium text-sm">
+                            🗑️ O'chirish
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Ob'ektlarni yangilash
-        function updateObjects() {
-            gameState.objects.forEach((obj, index) => {
-                obj.y += gameState.gameSpeed;
-                obj.element.style.top = obj.y + 'px';
+        function showAddForm() {
+            document.getElementById('adminForm').classList.remove('hidden');
+            document.getElementById('addBtn').classList.add('hidden');
+        }
 
-                // Collision detection
-                const playerRect = {
-                    x: gameState.playerX,
-                    y: 350,
-                    width: 50,
-                    height: 50
+        function cancelForm() {
+            document.getElementById('adminForm').classList.add('hidden');
+            document.getElementById('addBtn').classList.remove('hidden');
+            tempImages = [];
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+
+        function previewImages(event) {
+            const files = Array.from(event.target.files);
+            const preview = document.getElementById('imagePreview');
+            preview.classList.remove('hidden');
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    tempImages.push(e.target.result);
+                    preview.innerHTML += `
+                        <div class="relative aspect-square bg-gray-200 rounded-xl overflow-hidden">
+                            <img src="${e.target.result}" class="w-full h-full object-cover">
+                        </div>
+                    `;
                 };
-
-                const objRect = {
-                    x: obj.x,
-                    y: obj.y,
-                    width: obj.type === 'asteroid' ? 40 : (obj.type === 'powerup' ? 35 : 30),
-                    height: obj.type === 'asteroid' ? 40 : (obj.type === 'powerup' ? 35 : 30)
-                };
-
-                if (collision(playerRect, objRect)) {
-                    handleCollision(obj.type);
-                    obj.element.remove();
-                    gameState.objects.splice(index, 1);
-                } else if (obj.y > boardHeight) {
-                    obj.element.remove();
-                    gameState.objects.splice(index, 1);
-                }
+                reader.readAsDataURL(file);
             });
         }
 
-        // Collision detection
-        function collision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
-        }
-
-        // Collision handling
-        function handleCollision(type) {
-            switch (type) {
-                case 'star':
-                    gameState.score += 10;
-                    showMessage('⭐ +10 ball!', '#ffff00');
-                    break;
-                case 'powerup':
-                    const powerups = ['score', 'life', 'slow'];
-                    const power = powerups[Math.floor(Math.random() * powerups.length)];
-                    
-                    if (power === 'score') {
-                        gameState.score += 50;
-                        showMessage('💎 +50 ball!', '#00ff88');
-                    } else if (power === 'life') {
-                        if (gameState.lives < 5) {
-                            gameState.lives++;
-                            showMessage('❤️ Qo\'shimcha hayot!', '#ff69b4');
-                        }
-                    } else if (power === 'slow') {
-                        gameState.gameSpeed *= 0.7;
-                        setTimeout(() => gameState.gameSpeed /= 0.7, 3000);
-                        showMessage('🐌 Sekinlashtirish!', '#87ceeb');
-                    }
-                    break;
-                case 'asteroid':
-                    gameState.lives--;
-                    showMessage('☄️ Hayot yo\'qotildi!', '#ff4757');
-                    
-                    if (gameState.lives <= 0) {
-                        endGame();
-                    }
-                    break;
-            }
-        }
-
-        // Xabarni ko'rsatish
-        function showMessage(text, color) {
-            const msg = document.getElementById('message');
-            msg.textContent = text;
-            msg.style.color = color;
-            setTimeout(() => {
-                if (gameState.isRunning) {
-                    msg.textContent = 'Yaxshi ketmoqda!';
-                    msg.style.color = 'white';
-                }
-            }, 1500);
-        }
-
-        // UI yangilash
-        function updateUI() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('level').textContent = gameState.level;
-            document.getElementById('highScore').textContent = gameState.highScore;
-            document.getElementById('levelIndicator').textContent = `Daraja ${gameState.level}`;
+        function savePhone() {
+            const name = document.getElementById('phoneName').value;
+            const desc = document.getElementById('phoneDesc').value;
+            const fullDesc = document.getElementById('phoneFullDesc').value;
+            const price = document.getElementById('phonePrice').value;
             
-            const heartsCount = gameState.lives;
-            document.getElementById('lives').textContent = '❤️'.repeat(Math.max(0, heartsCount));
-
-            // Daraja o'sishi
-            const newLevel = Math.floor(gameState.score / 100) + 1;
-            if (newLevel > gameState.level) {
-                gameState.level = newLevel;
-                gameState.gameSpeed += 0.5;
-                gameState.spawnRate += 0.005;
-                showMessage(`🎉 ${gameState.level}-daraja!`, '#00ff88');
-            }
-        }
-
-        // O'yinni boshlash
-        function startGame() {
-            if (gameState.isPaused) {
-                gameState.isPaused = false;
-                gameLoop = setInterval(gameUpdate, 20);
-                document.getElementById('pauseBtn').textContent = 'Pauza';
-                document.getElementById('message').textContent = 'O\'yin davom etmoqda!';
+            if (!name || !desc || !fullDesc || !price || tempImages.length === 0) {
+                alert('Barcha maydonlarni to\'ldiring!');
                 return;
             }
-
-            gameState.isRunning = true;
-            gameState.isPaused = false;
-            gameState.score = 0;
-            gameState.level = 1;
-            gameState.lives = 3;
-            gameState.playerX = 275;
-            gameState.gameSpeed = 2;
-            gameState.spawnRate = 0.02;
-            gameState.objects = [];
-
-            // Eski ob'ektlarni tozalash
-            gameState.objects.forEach(obj => obj.element.remove());
-            gameState.objects = [];
-
-            player.style.left = gameState.playerX + 'px';
             
-            document.getElementById('startBtn').textContent = 'Qayta Boshlash';
-            document.getElementById('message').textContent = 'Yaxshi omad!';
-            document.getElementById('message').style.color = 'white';
-
-            gameLoop = setInterval(gameUpdate, 20);
-        }
-
-        // Pauzaga qo'yish
-        function pauseGame() {
-            if (!gameState.isRunning) return;
-
-            if (gameState.isPaused) {
-                gameState.isPaused = false;
-                gameLoop = setInterval(gameUpdate, 20);
-                document.getElementById('pauseBtn').textContent = 'Pauza';
-                document.getElementById('message').textContent = 'O\'yin davom etmoqda!';
-            } else {
-                gameState.isPaused = true;
-                clearInterval(gameLoop);
-                document.getElementById('pauseBtn').textContent = 'Davom';
-                document.getElementById('message').textContent = 'O\'yin pauza qilingan';
-            }
-        }
-
-        // O'yinni tugatish
-        function endGame() {
-            gameState.isRunning = false;
-            clearInterval(gameLoop);
+            const newPhone = {
+                id: Date.now().toString(),
+                name,
+                description: desc,
+                fullDescription: fullDesc,
+                imageUrls: tempImages,
+                price,
+                comments: []
+            };
             
-            if (gameState.score > gameState.highScore) {
-                gameState.highScore = gameState.score;
-                localStorage.setItem('starGameHighScore', gameState.highScore);
-                document.getElementById('message').textContent = `🏆 Yangi rekord: ${gameState.score} ball!`;
-            } else {
-                document.getElementById('message').textContent = `💀 O'yin tugadi! Ball: ${gameState.score}`;
-            }
+            phones.push(newPhone);
+            saveToStorage();
+            cancelForm();
+            renderAdminPhones();
+            tempImages = [];
             
-            document.getElementById('message').classList.add('game-over');
-            document.getElementById('startBtn').textContent = 'Qayta O\'ynash';
-            document.getElementById('pauseBtn').textContent = 'Pauza';
-
-            setTimeout(() => {
-                document.getElementById('message').classList.remove('game-over');
-            }, 3000);
+            document.getElementById('phoneName').value = '';
+            document.getElementById('phoneDesc').value = '';
+            document.getElementById('phoneFullDesc').value = '';
+            document.getElementById('phonePrice').value = '';
+            document.getElementById('phoneImages').value = '';
         }
 
-        // O'yin sikli
-        function gameUpdate() {
-            movePlayer();
-            createObject();
-            updateObjects();
-            updateUI();
+        function deletePhone(id) {
+            deletePhoneId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
         }
 
-        // Boshlang'ich sozlash
-        createBackgroundStars();
-        document.getElementById('highScore').textContent = gameState.highScore;
+        function confirmDelete() {
+            phones = phones.filter(p => p.id !== deletePhoneId);
+            saveToStorage();
+            closeDeleteModal();
+            renderAdminPhones();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+        }
+
+        // Initial render
+        renderPhones();
     </script>
 </body>
 </html>
